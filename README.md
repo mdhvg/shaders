@@ -6,12 +6,20 @@ This repository contains a collection compute shader programs I made as a fun pr
 
 ### Falling Sand simulation
 
-Learnt from [this video](https://youtu.be/8Tf18MMZ-5U) by [Yusef28
+Learnt from [this video](https://youtu.be/8Tf18MMZ-5U) by [@Yusef28
 ](https://www.youtube.com/@Yusef28) and [this paper](https://arxiv.org/abs/2008.06341)
 
 Run `cmake -DPROGRAMS=sand ..` to build
 
 ![falling sand preview](images/sand.png)
+
+### Raytracer
+
+Learnt from [this video](https://youtu.be/sVps_gqlrqQ) by [@GetIntoGameDev](https://www.youtube.com/@GetIntoGameDev).
+
+Run `cmake -DPROGRAMS=raytracer ..` to build
+
+![raytracer preview](images/raytracer.png)
 
 ## Building Instructions
 

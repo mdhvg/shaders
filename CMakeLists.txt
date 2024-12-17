@@ -45,6 +45,31 @@ set(GLAD_DIR "${LIB_DIR}/glad")
 set(IMGUI_DIR "${LIB_DIR}/imgui")
 set(FMT_DIR "${LIB_DIR}/fmt")
 
+# Threads
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
+# GLFW
+add_subdirectory("${GLFW_DIR}")
+
+# Glad
+add_library(glad "${GLAD_DIR}/src/glad.c")
+target_include_directories(glad PRIVATE "${GLAD_DIR}/include")
+
+# ImGUI
+add_library("imgui" "${IMGUI_DIR}/imgui.cpp"
+                    "${IMGUI_DIR}/imgui_demo.cpp"
+                    "${IMGUI_DIR}/imgui_draw.cpp"
+                    "${IMGUI_DIR}/imgui_tables.cpp"
+                    "${IMGUI_DIR}/imgui_widgets.cpp"
+                    "${IMGUI_DIR}/backends/imgui_impl_glfw.cpp"
+                    "${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp")
+target_include_directories("imgui" PRIVATE "${IMGUI_DIR}")
+target_include_directories("imgui" PRIVATE "${IMGUI_DIR}/backends")
+
+# FMT
+add_subdirectory("${FMT_DIR}")
+
 # Build selected programs
 foreach(PROG ${SELECTED_PROGRAMS})
     message(STATUS "Building program '${PROG}'...")
@@ -62,38 +87,23 @@ foreach(PROG ${SELECTED_PROGRAMS})
     # Link external libraries
 
     # Threads
-    set(THREADS_PREFER_PTHREAD_FLAG ON)
-    find_package(Threads REQUIRED)
     target_link_libraries(${PROG} Threads::Threads)
 
     # GLFW
-    add_subdirectory("${GLFW_DIR}")
     target_link_libraries(${PROG} glfw "${GLFW_LIBRARIES}")
     target_include_directories(${PROG} PRIVATE "${GLFW_DIR}/include")
     target_compile_definitions(${PROG} PRIVATE GLFW_INCLUDE_NONE)
 
     # Glad
-    add_library(glad "${GLAD_DIR}/src/glad.c")
-    target_include_directories(glad PRIVATE "${GLAD_DIR}/include")
     target_include_directories(${PROG} PRIVATE "${GLAD_DIR}/include")
     target_link_libraries(${PROG} glad ${CMAKE_DL_LIBS})
 
     # ImGUI
-    add_library("imgui" "${IMGUI_DIR}/imgui.cpp"
-                      "${IMGUI_DIR}/imgui_demo.cpp"
-                      "${IMGUI_DIR}/imgui_draw.cpp"
-                      "${IMGUI_DIR}/imgui_tables.cpp"
-                      "${IMGUI_DIR}/imgui_widgets.cpp"
-                      "${IMGUI_DIR}/backends/imgui_impl_glfw.cpp"
-                      "${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp")
-    target_include_directories("imgui" PRIVATE "${IMGUI_DIR}")
-    target_include_directories("imgui" PRIVATE "${IMGUI_DIR}/backends")
     target_include_directories(${PROG} PRIVATE "${IMGUI_DIR}")
     target_include_directories(${PROG} PRIVATE "${IMGUI_DIR}/backends")
     target_link_libraries(${PROG} "imgui" "${CMAKE_DL_LIBS}")
 
     # FMT
-    add_subdirectory("${FMT_DIR}")
     target_link_libraries(${PROG} fmt::fmt)
     target_include_directories(${PROG} PRIVATE "${FMT_DIR}/include")
 endforeach()

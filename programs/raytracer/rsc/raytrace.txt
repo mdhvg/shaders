@@ -1,0 +1,77 @@
+#version 460 core
+
+layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+layout(rgba32f, binding = 0) uniform image2D imgOutput;
+
+struct Sphere {
+    vec3 center;
+    float radius;
+    vec4 color;
+};
+
+struct Ray {
+    vec3 origin;
+    vec3 direction;
+};
+
+const vec3 camera = vec3(0.0f, 0.0f, 0.0f);
+const vec3 forward = vec3(0.0f, 0.0f, -1.0f);
+const vec3 up = vec3(0.0f, 1.0f, 0.0f);
+const vec3 right = vec3(-1.0f, 0.0f, 0.0f);
+
+const vec3 sun = normalize(vec3(-1.0f, 1.0f, 1.0f));
+
+bool hit(Ray ray, Sphere sphere, inout float t) {
+    vec3 oc = ray.origin - sphere.center;
+
+    float a = dot(ray.direction, ray.direction);
+    float b = 2 * dot(oc, ray.direction);
+    float c = dot(oc, oc) - sphere.radius * sphere.radius;
+
+    float d = b * b - 4 * a * c;
+    if (d < 0) {
+        return false;
+    }
+
+    float t_hit = (-b - sqrt(d)) / (2 * a);
+    if (t_hit < t && t_hit > 0.0001) {
+        t = t_hit;
+        return true;
+    } else {
+        return true;
+    }
+}
+
+void main() {
+    ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
+    vec2 screenSize = imageSize(imgOutput);
+
+    float h = (2.0 * texelCoord.x - screenSize.x) / screenSize.x;
+    float v = (2.0 * texelCoord.y - screenSize.y) / screenSize.y;
+
+    Ray ray;
+    ray.origin = camera;
+    ray.direction = normalize(forward + h * right + v * up);
+
+    Sphere s;
+    s.center = vec3(0.0f, 0.0f, -3.0f);
+    s.radius = 2.0f;
+    s.color = vec4(0.9f, 0.95f, 0.99f, 1.0f);
+
+    Sphere s2;
+    s2.center = vec3(-1.0f, 0.0f, -3.0f);
+
+    float t = 999;
+    vec4 color = vec4(0.0f);
+
+    if (hit(ray, s, t)) {
+        color = s.color;
+        vec3 n = normalize(t * ray.direction - s.center);
+        float amount = max(0.0f, dot(n, sun));
+        color *= amount;
+    }
+
+    vec2 uv = vec2(texelCoord) / vec2(screenSize);
+
+    imageStore(imgOutput, texelCoord , color);
+}
