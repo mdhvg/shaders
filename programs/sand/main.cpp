@@ -11,8 +11,8 @@ export __GLX_VENDOR_LIBRARY_NAME=nvidia
 before running the program.
 */
 
-const int width = 1024;
-const int height = 1024;
+const int width = 640;
+const int height = 640;
 
 int main() {
     GLFWwindow* window = createWindow(width, height, "Compute Shaders");
@@ -109,7 +109,6 @@ int main() {
             ImGui::Text("Frametime: %f", frameTime - startTime);
             startTime = frameTime;
             ImGui::Text("Mouse Position: (%f, %f)", curX, curY);
-            ImGui::Text("Cycle: %d", cycle);
 
             ImGui::End();
         }
