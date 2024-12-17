@@ -1,5 +1,3 @@
-#include <fnmatch.h>
-
 #include <cassert>
 #include <fstream>
 #include <ios>

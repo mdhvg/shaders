@@ -1,7 +1,7 @@
 #include "Core.h"
 #include "Debug.h"
 #include "Shader.h"
-#include "Util.h"
+#include "Utils.h"
 #include "Renderer.h"
 
 /*
@@ -15,43 +15,13 @@ const int width = 1024;
 const int height = 1024;
 
 int main() {
-    glfwSetErrorCallback(glfw_error_callback);
-    if (!glfwInit()) {
-        return 1;
-    }
+    GLFWwindow* window = createWindow(width, height, "Compute Shaders");
+    MyASSERT(window != nullptr);
 
-    GLFWwindow* window = glfwCreateWindow(width, height, "Compute Shaderss", nullptr, nullptr);
-
-    if (window == nullptr) {
-        return 1;
-    }
-
-    glfwMakeContextCurrent(window);
+    // Setup V-Sync
     glfwSwapInterval(1);
 
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-
-    const char* glsl_version = "#version 460 core";
-
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init(glsl_version);
-
-    gladLoadGL();
-    // Get the renderer and vendor information
-    const char* renderer = (const char*)glGetString(GL_RENDERER); // Returns the renderer
-    const char* vendor = (const char*)glGetString(GL_VENDOR); // Returns the vendor
-    const char* version = (const char*)glGetString(GL_VERSION); // Returns the OpenGL version
-    const char* shadingLanguageVersion = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION); // Returns the GLSL version
-
-    // Print the information
-    printf("GPU Vendor: %s\n", vendor);
-    printf("GPU Renderer: %s\n", renderer);
-    printf("OpenGL Version: %s\n", version);
-    printf("GLSL Version: %s\n", shadingLanguageVersion);
-
+    printOpenGLInfo();
     printComputeShaderLimits();
 
     std::vector<float> vertices = {
