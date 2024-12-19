@@ -64,6 +64,7 @@ add_library("imgui" "${IMGUI_DIR}/imgui.cpp"
                     "${IMGUI_DIR}/imgui_widgets.cpp"
                     "${IMGUI_DIR}/backends/imgui_impl_glfw.cpp"
                     "${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp")
+target_include_directories("imgui" PRIVATE "${GLFW_DIR}/include")
 target_include_directories("imgui" PRIVATE "${IMGUI_DIR}")
 target_include_directories("imgui" PRIVATE "${IMGUI_DIR}/backends")
 
