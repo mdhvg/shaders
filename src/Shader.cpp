@@ -8,7 +8,7 @@
 
 std::string readFile(const std::string& filename) {
     std::ifstream file(filename);
-    std::cout << "Reading file: " << filename << std::endl;
+    fmt::println("Reading file: {}", filename);
     assert(file.is_open());
     std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     file.close();
@@ -26,7 +26,7 @@ unsigned int compileShader(const std::string& filename, unsigned int type) {
     char infoLog[512];
     if (!compileStatus) {
         glGetShaderInfoLog(id, 512, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+        fmt::println("ERROR::SHADER::{}::COMPILATION_FAILED\n{}", type == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT", infoLog);
         assert(false);
     }
     return id;
@@ -42,7 +42,7 @@ unsigned int createRenderProgram(unsigned int vertexShader, unsigned int fragmen
     char infoLog[512];
     if (!linkStatus) {
         glGetProgramInfoLog(id, 512, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+        fmt::println("ERROR::SHADER::PROGRAM::LINKING_FAILED\n{}", infoLog);
         assert(false);
     }
     return id;
@@ -57,7 +57,7 @@ unsigned int createComputeProgram(unsigned int computeShader) {
     char infoLog[512];
     if (!linkStatus) {
         glGetProgramInfoLog(id, 512, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+        fmt::println("ERROR::SHADER::PROGRAM::LINKING_FAILED\n{}", infoLog);
         assert(false);
     }
     return id;

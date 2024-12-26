@@ -1,0 +1,70 @@
+#version 460 core
+
+out vec4 FragColor;
+in vec2 uvOut;
+uniform sampler2D tex;
+uniform vec2 resolution;
+uniform int ditherSize;
+uniform float spread;
+uniform ivec3 paletteSize;
+uniform bool grayscale;
+
+const int bayer2[2 * 2] = {
+    0, 2,
+    3, 1
+};
+
+const int bayer4[4 * 4] = {
+     0,  8,  2, 10,
+    12,  4, 14,  6,
+     3, 11,  1,  9,
+    15,  7, 13,  5
+};
+
+const int bayer8[8 * 8] = {
+     0, 32,  8, 40,  2, 34, 10, 42,
+    48, 16, 56, 24, 50, 18, 58, 26,
+    12, 44,  4, 36, 14, 46,  6, 38,
+    60, 28, 52, 20, 62, 30, 54, 22,
+     3, 35, 11, 43,  1, 33,  9, 41,
+    51, 19, 59, 27, 49, 17, 57, 25,
+    15, 47,  7, 39, 13, 45,  5, 37,
+    63, 31, 55, 23, 61, 29, 53, 21
+};
+
+void main()
+{
+    vec4 color = texture(tex, uvOut);
+    vec2 pixel = uvOut * resolution;
+
+    ivec2 ditherIndex = ivec2(pixel) % ditherSize;
+    float M = 0.0;
+    switch (ditherSize) {
+        case 2:
+            M = float(bayer2[ditherIndex.y * 2 + ditherIndex.x]) / 4.0;
+            break;
+        case 4:
+            M = float(bayer4[ditherIndex.y * 4 + ditherIndex.x]) / 16.0;
+            break;
+        case 8:
+            M = float(bayer8[ditherIndex.y * 8 + ditherIndex.x]) / 64.0;
+            break;
+        default:
+            M = float(bayer2[ditherIndex.y * 2 + ditherIndex.x]) / 4.0;
+            break;
+    }
+    M -= 0.5;
+    M *= spread;
+
+    color += M;
+
+    if (grayscale) {
+        float grayValue = floor(((color.r + color.g + color.b) / 3.0) * (paletteSize.r - 1) + 0.5) / (paletteSize.r - 1);
+        FragColor = vec4(grayValue);
+    } else {
+        float rValue = floor(color.r * (paletteSize.r - 1) + 0.5) / (paletteSize.r - 1);
+        float gValue = floor(color.g * (paletteSize.g - 1) + 0.5) / (paletteSize.g - 1);
+        float bValue = floor(color.b * (paletteSize.b - 1) + 0.5) / (paletteSize.b - 1);
+        FragColor = vec4(rValue, gValue, bValue, 1.0f);
+    }
+}
