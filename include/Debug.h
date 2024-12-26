@@ -3,24 +3,31 @@
 
 #include <fmt/core.h>
 
-#define GLASSERT(x)   \
-  if (!(x))           \
-    __builtin_trap()
-// __debugbreak(); alternative in linux is __builtin_trap()
+#if defined(_WIN32) || defined(_WIN64)
+#if defined(_MSC_VER)
+#define DEBUG_BREAK() __debugbreak()
+#else
+#define DEBUG_BREAK() __builtin_trap()
+#endif
+#else
+#define DEBUG_BREAK() __builtin_trap()
+#endif
 
-#define MyASSERT(x)   \
-  if (!(x)) { \
-    fmt::print("Assertion failed in {} in {} at line {}\n", \
-    #x, __FILE__, __LINE__); \
-    __builtin_trap(); \
-  }
-// __debugbreak(); alternative in linux is __builtin_trap()
+#define GLASSERT(x)                                                 \
+    if (!(x))                                                       \
+	DEBUG_BREAK();
 
-#define GLCall(x)                                                              \
-  GLClearError();                                                              \
-  x;                                                                           \
-  GLASSERT(GLLogCall(#x, __FILE__,                                               \
-                   __LINE__)); // Werap a function with an error boundary
+#define MyASSERT(x)                                                 \
+    if (!(x)) {                                                     \
+	fmt::print("Assertion failed: {} at {}:{}\n", #x, __FILE__,     \
+		   __LINE__);                                               \
+	DEBUG_BREAK();                                                  \
+    }
+
+#define GLCall(x)                                                   \
+    GLClearError();                                                 \
+    x;                                                              \
+    GLASSERT(GLLogCall(#x, __FILE__, __LINE__));
 
 void GLClearError();
 bool GLLogCall(const char* function, const char* file, int line);
