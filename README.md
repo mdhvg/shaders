@@ -36,8 +36,8 @@ Run `cmake -DPROGRAMS=dither ..` to build
 - Recursively clone this repo
 
 ```bash
-git clone --recursive https://github.com/mdhvg/compute-shaders
-cd compute-shaders
+git clone --recursive https://github.com/mdhvg/shaders
+cd shaders
 ```
 
 - Create build directory
