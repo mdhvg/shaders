@@ -47,7 +47,7 @@ mkdir build
 cd build
 ```
 
-# Linux/MacOS (Mac not tested)
+### Linux/MacOS (Mac not tested)
 
 - Build a specific program
 
@@ -68,7 +68,7 @@ cmake ..
 make -j4
 ```
 
-# Windows
+### Windows
 
 Requirements: [MinGW-w64](https://www.mingw-w64.org/downloads/), [Ninja](https://ninja-build.org/)
 
